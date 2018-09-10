@@ -1,0 +1,338 @@
+ 
+ 1- Description de la methode de tri 4 "le tri rapide":
+ 
+ Cette methode illustre le principe dit « diviser pour régner »
+ 
+Le principe du Tri Rapide est de parcourir le tableau Tab = (t1, t2, ... , tn) en le divisant systématiquement en deux sous-tableaux Tab1 et Tab2.
+ L'un est tel que tous ses éléments sont inférieurs à tous ceux de l'autre tableau et en travaillant séparément sur chacun des deux sous-tableaux
+ en réappliquant la même division à chacun des deux sous-tableaux jusqu'à obtenir uniquement des sous-tableaux à un seul élément.
+
+ C'est un algorithme dichotomique qui divise donc le problème en deux sous-problèmes dont les résultats sont réutilisés par recombinaison,
+
+Pour partitionner un tableau Tab en deux sous-tableaux Tab1 et Tab2 :
+◦on choisit une valeur quelconque dans le Tableau appelée pivot (dans se qui va suivre se sra le 1er element,
+◦Le sous-tableau Tab1 va contenir tous les éléments de Tab inférieure ou égale au pivot,
+◦et le sous-tableau Tab2 tous les éléments de Tab supérieure au pivot.
+
+- Ainsi de proche en proche en subdivisant le problème en deux sous-problèmes, à chaque étape, nous obtenons un pivot bien placé.
+
+- Une procedure QuickSort va réaliser cette action .Cette procedure est récursive puisqu’on la réapplique sur les deux sous-tableaux obtenues.
+ 
+ 
+ 2- Algorithme:
+
+	2.1- Récursif:	
+	
+				NBR 10000;
+				
+				/********************************************************************************************/
+				
+					procedure pérmuter(tableau[] :entier,a:entier, b:entier)
+					VAR
+						temp :entier;
+						
+					DEBUT
+						temp = tableau[a];
+						tableau[a] = tableau[b];
+						tableau[b] = temp;
+					FIN
+				
+				/********************************************************************************************/
+
+				procedure quickSort(tableau[]:entier,debut:entier, fin:entier)
+				VAR
+					gauche, droit :entier;
+					pivot :entier;
+					
+				DEBUT
+					gauche = debut-1;
+					droite = fin+1;
+					CONST pivot = tableau[debut];
+
+					/* Si le tableau est de longueur nulle, il n'y a rien à faire. */
+					SI(debut >= fin)
+						ALORS return;
+					FIN SI;
+
+					/* Sinon, on parcourt le tableau, une fois de droite à gauche, et une
+					   autre de gauche à droite, à la recherche d'éléments mal placés,
+					   que l'on permute. Si les deux parcours se croisent, on arrête. */
+					TANT QUE(1)
+						FAIRE
+							REPETER 
+								droite = droit - 1; 
+							JUSQU'A(tableau[droite] > pivot);
+							
+							REPETER
+								gauche = gauche + 1; 
+							JUSQU'A(tableau[gauche] < pivot);
+
+							SI(gauche < droite)
+								ALORS pérmuter(tableau, gauche, droite);
+								SINON break;
+							FIN SI;
+						FAIT;
+
+						/* Maintenant, tous les éléments inférieurs au pivot sont avant ceux
+					   supérieurs au pivot. On a donc deux groupes de cases à trier. On utilise
+					   pour cela... la méthode quickSort elle-même ! */
+					   
+						quickSort(tableau, debut, droite);
+						quickSort(tableau, droite+1, fin);
+				FIN.
+				
+	2.2- Itératif: similaire à l'algorithme récursif, avec gestion de la pile.
+	
+		procedure permuter( a* :entier, b* :entier)
+		VAR
+			temp: entier;
+		DEBUT
+			temp = *a;
+			*a = *b;
+			*b = temp;
+		FIN.
+
+		fonction Partition(data[1..n]:entier, left:entier, right:entier):entier
+		VAR
+			x,i,j:entier;
+		
+		DEBUT
+			x = data[right];
+			i = (left - 1);
+			
+			POUR j de left à j right - 1 pas 1)
+			FAIRE
+				SI(data[j] <= x)
+					ALORS
+						++i;
+						permuter(&data[i], &data[j]);
+				FIN SI;
+			FAIT;
+
+			permuter(&data[i + 1], &data[right]);
+
+			return (i + 1);
+		FIN.
+
+		Procadure QuickSortIterative( data[1..n]:entier, count:entier) 
+		VAR
+			startIndex,endIndex,top:entier;
+			stack* :entier;
+		
+		DEBUT
+			startIndex = 0;
+			endIndex = count - 1;
+			top = -1;
+			stack = (entier*)Allouer(Taille(entier) * count);
+
+			stack[++top] = startIndex;
+			stack[++top] = endIndex;
+
+			TANT QUE(top >= 0)
+			FAIRE
+				endIndex = stack[top--];
+				startIndex = stack[top--];
+
+				p:entier;
+				p = Partition(data, startIndex, endIndex);
+
+				SI(p - 1 > startIndex)
+				ALORS
+					DEBUT
+						stack[++top] = startIndex;
+						stack[++top] = p - 1;
+					FIN;
+				FIN SI;
+
+				SI(p + 1 < endIndex)
+				ALORS
+					DEBUT
+						stack[++top] = p + 1;
+						stack[++top] = endIndex;
+					FIN
+				FIN SI;
+				
+			FAIT;
+
+			Libérer(stack);
+		FIN.
+ 
+
+ 3- Calcule de la compléxité temporelle CT(n) en notation Landau: 
+ 
+ 3.1- Pire cas (il s'agit d'un tableau trié dans l'ordre inverse avec choix du 1er element comme pivot )
+		le 1er element (plus grand) du tableau sera pris en pivot tous le tableau sera parcouru pour atteindre de n ième element (plus petit) afin de les pérmuter puis,
+		ainsi le n ième element (plus grand) sera à sa place, on vérifi pour le 1er element (plus petit) qui s'avere aussi a sa place donc pas de pérmutation 
+		(mais tous le tableau est parcouru pour s'en rendre compte).
+		On se retrouve dans la situation : le n-1 ième element(2eme plus grande valeur du tableau), a été permutée avec le 2,
+		puis, comme toutes les autres valeurs sont inférieures au n-1 ième element, nos deux recherches d'éléments mal placés se sont « croisées »,
+		et on n'a rien permuté de plus.
+	De même, après cette étape, un autre passage déterminera que le 2 est bien placé et qu'on peut l'ignorer après avoir commeme parcouru tous le tableau.
+
+	Ce schéma se répètera ainsi jusqu'à ce que tout le tableau soit trié. On se rend compte que, à chaque étape,
+	on place correctement une valeur et que, pour ce faire, on parcourt tout l'ensemble tableau à trier. 
+	
+	Ainsi, le premier passage fait n tests, le second n-1, et ainsi de suite. Au final, on aura effectué  N + (N - 1) + (N - 2) + ... + 3 + 2 + 1 tests, 
+	et N permutations. En calculant la somme N + (N - 1) + (N - 2) + ... + 3 + 2 + 1, on trouve qu'elle est égale à N*(N+1)/2 = N²/2 + N/2,
+	soit en notation landau O(N²).
+
+
+	 
+ 3.2- meilleur cas (il s'agit des tableaus dont le pivot est proche de la médiane du tableau)
+ 
+	Nous devons d'abord remarquer qu'à chaque étape du processus, nous doublons le nombre de sous-tableaux considérés, 
+	mais que la taille de chacun de ces sous-tableaux est divisée par deux. Donc, au final, chaque étape demandera N opérations.
+
+	Il nous faut maintenant compter le nombre d'étapes nécessaires pour trier un tableau.
+	Pour cela, Le tri est bien évidemment terminé lorsque nous atteignons des sous-tableaux de taille 1. 
+	Donc : il y a autant d'étapes que de divisions par 2 nécessaires pour passer de N à 1. 
+	La fonction qui nous dit « combien de fois diviser N par 2 avant d'arriver à 1 » est la fonction logarithme de base 2 :"log".
+
+	Du coup, le tri rapide a un compléxité au cas moyen: O(N * log(N)).
+ 
+ 
+ 
+
+ 
+ 4- Calcule de la complexité spatiale CS(n):
+	nous avons 1 tableau d'entier à N elements ainsi que 3 variables entières 
+	on considérant que la taille d'une entier est sur 4 Octets 
+	nous obtenant : CS(n) = 4(N + 3) Octets = 4N + 12 octets.
+	
+	Ainsi CS(n) = O(n).
+ 
+ 5- Programme en langage C:
+
+				#include<stdio.h>
+				#include<stdlib.h>
+				#include<time.h>
+				#define NBR 50000;
+				//100000 , 200000 , 400000 , 800000 , 3200000 , 6400000 , 12800000 , 25600000 , 1024000000 , 2048000000
+	
+				/********************************************************************************************/
+				
+					void pérmuter(int tableau[], int a, int b)
+				{
+					int temp = tableau[a];
+					tableau[a] = tableau[b];
+					tableau[b] = temp;
+				}
+				
+				/********************************************************************************************/
+
+				void quickSort(int tableau[], int debut, int fin)
+				{
+					int gauche = debut-1;
+					int droite = fin+1;
+					const int pivot = tableau[debut];
+
+					/* Si le tableau est de longueur nulle, il n'y a rien à faire. */
+					if(debut >= fin)
+						return;
+
+					/* Sinon, on parcourt le tableau, une fois de droite à gauche, et une
+					   autre de gauche à droite, à la recherche d'éléments mal placés,
+					   que l'on permute. Si les deux parcours se croisent, on arrête. */
+					while(1)
+					{
+						do droite--; while(tableau[droite] > pivot);
+						do gauche++; while(tableau[gauche] < pivot);
+
+						if(gauche < droite)
+							pérmuter(tableau, gauche, droite);
+						else break;
+					}
+
+					/* Maintenant, tous les éléments inférieurs au pivot sont avant ceux
+					   supérieurs au pivot. On a donc deux groupes de cases à trier. On utilise
+					   pour cela... la méthode quickSort elle-même ! */
+					quickSort(tableau, debut, droite);
+					quickSort(tableau, droite+1, fin);
+				}
+				
+				/********************************************************************************************/
+
+ 
+ 6- Mesure des temps d'exécution:
+
+Ordre_inverse = [9.787000 , 38.979000 , 157.157000 , 627.971000 , 2527.851000 , 10451.672 , 43897.022 , 182172.643 , 769679.415 , 3087953.419 , 12870591.520 , 52923872.330 , 22228026.318 ]
+
+Ordre = [ 15.067000 , 59.997000 , 243.606000 , 962.812000 , 3864.314000 , 15379.962000 , 61519.878 , 243618.724 , 979347.255 , 3917389.023 , 15638216.980 , 60926493.360 , 243705973.410  ]
+
+Aléatoire = [ 0.015000 , 0.033000 , 0.062000 , 0.132000 , 0.325000 , 2.700000 , 9.100000 , 32.848000 , 124.024000 , 458.888000 , 1762.132992 , 4933.971000 , 15788.716 ]
+
+ 
+
+ 
+ 
+ 7- done by haroune
+ 
+ 8- Comparaison de la complexité théorique avec celle expérimentale.
+ 
+ On remarque que les temps d'execution sont approximativement multiplies par 4 lorsque N est
+double pour les tableaux en ordre croissant et en ordre inverse.
+
+Exemples :
+N1 = 50000 => T1 = 9.787000
+N2 = 100000 = 2 * N1 => T2 = 38.979000 = 4 * T1 = 2² * T1
+
+Aussi
+N1 = 400000 => T1 = 627.971000
+N2 = 800000 = 2 * N1 => T2 = 2527.851000 = 4 * T1 = 2² * T1
+
+On en deduit que le temps d'execution est proportionnel a N, ce que l'on peut representer par
+la formule suivante :
+T1(x * N) = x² * T1(N) pour tous x * N qui appartient a [50000 - 2048000000]
+(x etant la tangente d'un point sur le graphe).
+
+/***********************************************************************************************/
+
+ Puis l'on peut aussi constater que lorsque la taille N du tableau en ordre aléatoire est doublé ,
+ le temps d'execution est lui aussi à peu près doublé.
+ 
+ Exemples :
+N1 = 50000 => T1 = 0.015000
+N2 = 100000 = 2 * N1 => T2 = 0.033000 = 2 * T1 
+
+Aussi
+N1 = 400000 => T1 = 0.132000 
+N2 = 800000 = 2 * N1 => T2 =  0.325000 = 2 * T1 
+
+On en deduit que le temps d'execution est proportionnel a N, ce que l'on peut representer par
+la formule suivante :
+T2(x * N) = x * T2(N) pour tous x * N qui appartient a [50000 - 2048000000]
+(x etant la tangente d'un point sur le graphe).
+
+
+/***********************************************************************************************/
+
+Ainsi nos données expérimentale de la compléxité suivent une des deux fonctions T1 et T2 
+Et la compléxité théorique au pire cas est de l'ordre de : P(n) = n²
+Et la compléxité théorique au meilleur cas est de l'ordre de : M(n) = n * log(n)
+
+On reléve que : 
+ P(n) >= T1(n) >= M(n)
+ et  
+ P(n) >= T2(n) >= M(n)
+ 
+ (les données obtenues par les testes sont majorées par les données du pire cas et minorées par les données au meilleur cas)
+ 
+ On en conclue que "Le modèle théorique est conforme avec les mesures expérimentales!
+
+
+Remarque:
+Nous ne pouvant pas generaliser car les testes que nous avons fait n'englobent pas toutes les
+valeurs possibles,
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 

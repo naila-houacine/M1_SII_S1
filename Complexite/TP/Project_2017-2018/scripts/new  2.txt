@@ -1,0 +1,42 @@
+				/********************************************************************************************/
+								
+				Algorithme Algo4_Tri_Rapide
+				VAR
+					i,n:entier;
+					tab1[NBR],tab2[NBR],tab3[NBR] :entier;
+				
+				DEBUT					
+					n = NBR;
+					i = 0;
+										
+					POUR i de 0 à NBR pas 1
+						FAIRE
+							tab1[i] = i;
+							tab2[i] = n;
+							tab3[i] = (int) rand() mod NBR;
+							n--;
+						FAIT;
+
+					quickSort(tab1, 0, NBR);
+					quickSort(tab2, 0, NBR);
+					quickSort(tab3, 0, NBR);
+					
+					POUR i de 0 à NBR pas 1
+						FAIRE
+							ecrire( tab1[i] , " , " );
+						FAIT;
+					
+					ecrire("\n *************************************** \n");
+					
+					POUR i de 0 à NBR pas 1
+						FAIRE
+							ecrire( tab2[i] , " , " );
+						FAIT;
+					
+					printf("\n *************************************** \n");
+					
+					POUR i de 0 à NBR pas 1
+						FAIRE
+							ecrire( tab3[i] , " , " );
+						FAIT;
+				FIN

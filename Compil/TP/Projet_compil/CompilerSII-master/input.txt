@@ -1,0 +1,17 @@
+compil wiss ()
+{
+intCompil a,b,c;
+intCompil t,s,uu;
+floatCompil k,l;
+start
+printcompil("kheuubz dsfds sdfs \" ddsdf");
+printcompil(a,b,c);
+if (t>0) then k = 2.33 - 2.2/l-l*4.0;
+endif;
+
+if (t<0) then uu = 2/5;
+else
+s=55;
+scancompil(s);
+endif;
+}

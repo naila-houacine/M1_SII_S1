@@ -1,0 +1,67 @@
+heapSort
+
+  Nous remarquons que les temps d'execution evoluent de manière logarithm, ce qui signifique que si par exemple nous doublons le nombre de N en entrée, le temps d'execution se voit doublé. 
+
+  Le temps d'execution est donc proportionnel à N, et nous pouvons le representer par la formule suivante : 
+  T(x * N) = x * T(N).
+
+  Exemple : 
+  N1 = 50000 => T1 = 0.00515
+  N2 = 100000 = 2 * N1 => T2 = 0.001030 = 2 * T1.
+
+  NB : Quelque soit l'ordre des éléments du tableau (ordonnés, inverses ou aleatoire), la complexité est toujours quadratique et la formule citée plus haut est toujours valide.
+
+  
+/***************************************************/
+
+
+bubbleSort
+
+  Nous remarquons que les temps d'execution evoluent de manière quadratique, 
+  ce qui signifique que si par exemple nous doublons le nombre de N en entrée, le temps d'execution se voit multiplié par 4. 
+
+  Le temps d'execution est donc proportionnel à N, et nous pouvons le representer par la formule suivante : 
+ 
+\begin{center}
+
+\color{red}
+T1(x * N) = x² * T1(N) pour tous x * N qui appartient a [50000 - 2048000000]\\
+\color{black}
+(x etant la tangente d'un point sur le graphe).\\
+
+\end{center}
+
+  Exemple : 
+  N1 = 50000 => T1 = 14.629469
+  N2 = 100000 = 2 * N1 => T2 = 60.693804 = 4 * T1 = 2² * T1.
+
+  NB : Quelque soit l'ordre des éléments du tableau (ordonnés, inverses ou aleatoire),
+  la complexité est toujours quadratique et la formule citée plus haut est toujours valide.
+
+
+
+/***************************************************/
+
+
+On remarque que les temps d'exécution sont approximativement multiplies par 4 lorsque N est doublé pour: 
+\color{blue} les tableaux en ordre croissant et en ordre inverse.\\
+\color{black}
+
+Exemples :\\
+N1 = 50000 $\rightarrow$ T1 = 9.787000 \\
+N2 = 100000 = 2 * N1 $\rightarrow$ T2 = 38.979000 $\approx$ 4 * T1 = 2² * T1\\
+
+Aussi\\
+N1 = 400000 $\rightarrow$ T1 = 627.971000\\
+N2 = 800000 = 2 * N1 $\rightarrow$ T2 = 2527.851000 $\approx$ 4 * T1 = 2² * T1\\
+
+On en déduit que le temps d'exécution est proportionnel a N, ce que l'on peut représenter par la formule suivante :\\
+
+\begin{center}
+
+\color{red}
+T1(x * N) = x² * T1(N) pour tous x * N qui appartient a [50000 - 2048000000]\\
+\color{black}
+(x etant la tangente d'un point sur le graphe).\\
+
+\end{center}

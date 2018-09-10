@@ -1,0 +1,30 @@
+
+FONCTION Tri_Selection(T:Tableau[] , n:entier):Tableau[]
+VAR
+	i,j,n1,x : entier;
+DEBUT
+	i = 1;
+	n1 = n -1;
+	
+	TANT QUE(i <= n1)
+	FAIRE
+		j = i +1;
+		
+		TANT QUE(j <= n)
+		FAIRE
+			
+			SI( T[i] > T[j] )
+			ALORS
+				x = T[i] ;
+				T[i] = T[j];
+				T[j] = x;
+			FIN SI;
+			
+			j = j + 1;
+			
+		FAIT;
+		i = i + 1;	
+	FAIT;
+	retourner T;
+
+FIN

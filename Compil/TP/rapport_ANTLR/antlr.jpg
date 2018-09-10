@@ -1,0 +1,39 @@
+La différence la plus significative entre YACC / Bison et ANTLR est le type de grammaire que ces outils peuvent traiter. 
+YACC / Bison gère les grammaires LALR, ANTLR gère les grammaires LL.
+
+YACC / Bison génère des analyseurs pilotés par table, ce qui signifie que la "logique de traitement" est contenue dans les données du programme analyseur,
+ pas tellement dans le code de l'analyseur. L'avantage est que même un parseur pour un langage très complexe a une empreinte de code relativement faible.
+ C'était plus important dans les années 1960 et 1970, lorsque le matériel était très limité. 
+ 
+ Les générateurs d'analyseurs pilotés par table remontent à cette époque et l'empreinte du petit code était une exigence principale à l'époque.
+
+ 
+ANTLR génère des analyseurs de descente récursifs, ce qui signifie que la "logique de traitement" est contenue dans le code de l'analyseur,
+ car chaque règle de production de la grammaire est représentée par une fonction dans le code de l'analyseur. 
+ 
+ L'avantage est qu'il est plus facile de comprendre ce que fait l'analyseur en lisant son code.
+ En outre, les analyseurs de descente récursifs sont généralement plus rapides que les analyseurs pilotés par table. 
+ 
+ Cependant, pour les langues très complexes, l'empreinte du code sera plus grande. 
+ C'était un problème dans les années 1960 et 1970. 
+ À l'époque, seuls des langages relativement petits comme Pascal par exemple étaient implémentés de cette façon en raison de limitations matérielles.
+
+Les analyseurs syntaxiques générés par ANTLR sont généralement à proximité de 10.000 lignes de code et plus. 
+Les parseurs de descente récursifs manuscrits sont souvent dans le même ordre de grandeur. 
+Le compilateur Wirth's Oberon est peut-être le plus compact avec environ 4000 lignes de code incluant la génération de code, 
+mais Oberon est un langage très compact avec seulement environ 40 règles de production.
+
+Un grand avantage pour ANTLR est l'outil IDE graphique, appelé ANTLRworks. 
+C'est un laboratoire complet de grammaire et de langage. Il visualise vos règles de grammaire au fur et à mesure que vous les tapez et s'il trouve des conflits (s'il y en a), 
+il vous montrera graphiquement ce qu'est le conflit et ce qui le provoque. 
+
+Il peut même automatiquement refactoriser et résoudre des conflits tels que la récursivité à gauche. Une fois que vous avez une grammaire sans conflit, 
+vous pouvez laisser ANTLRworks analyser un fichier d'entrée de votre langage et construire une arborescence d'analyse 
+et AST pour vous et afficher graphiquement l'arbre dans l'EDI. 
+
+C'est un très gros avantage car cela peut vous faire économiser beaucoup d'heures de travail: vous trouverez des erreurs conceptuelles dans votre langage 
+avant de commencer à coder! Je n'ai pas trouvé un tel outil pour les grammaires LALR, il semble qu'il n'y en ait pas.
+
+Peut produire des analyseurs syntaxiques dans différentes langues.
+
+Java n'est pas requis pour exécuter l'analyseur généré.
