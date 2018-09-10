@@ -1,0 +1,470 @@
+%arara : pdflatex
+\documentclass[•]{article}
+
+\usepackage{../../TP0/style}
+
+\begin{document}
+\def\reportnumber{1}
+\def\reporttitle{Création et manipulation d'une BD}
+\input{../../TP0/front_page}
+\section{Création des tablespaces et des utilusateurs}
+\subsection{Créer deux TableSpaces \texttt{INTERVENTION\_TBS} et \texttt{INTERVENTION\_TempTBS}}
+\textrm{La création d'un espace de travail composé d'une TableSpace et d'une TableSpace temporaire est nécessaire. 
+Le nom, le chemin et la taille de chacune d'entre elles doivent être défini lors de la création}
+\subsubsection{Requête}
+\begin{sql}
+CREATE TABLESPACE INTERVENTION_TBS
+DATAFILE 'INTERVENTION_TBS.DAT'
+SIZE 100M
+AUTOEXTEND ON
+ONLINE;
+
+CREATE TEMPORARY TABLESPACE INTERVENTION_tempTBS
+TEMPFILE 'INTERVENTION_tempTBS.DAT'
+SIZE 100M
+AUTOEXTEND ON;
+\end{sql}
+\subsubsection{Résultat}
+\begin{sql}
+Tablespace created.
+Tablespace created.
+\end{sql}
+\subsection{Créer un utilisateur \texttt{DBAINTERVENTION} en lui attribuant les deux tablespaces créés précédemment}
+\subsubsection{Requête}
+\begin{sql}
+CREATE USER DBAINTERVENTION
+IDENTIFIED BY DBAINTERVENTION
+DEFAULT TABLESPACE INTERVENTION_TBS
+TEMPORARY TABLESPACE INTERVENTION_tempTBS;
+\end{sql}
+\subsubsection{Résultat}
+\begin{sql}
+User created.
+\end{sql}
+\subsection{Donner tous les privilèges à cet utilisateur.}
+\subsubsection{Requête}
+\begin{sql}
+GRANT ALL PRIVILEGES TO DBAINTERVENTION;
+\end{sql}
+\subsubsection{Résultat}
+\begin{sql}
+Grant succeeded.
+\end{sql}
+\section{Langage de définition de données}
+\subsection{Créer les relations de base avec toutes les contraintes d’intégrité}
+\subsubsection{Requête}
+\begin{sql}
+CREATE TABLE CLIENT
+(
+NUMCLIENT INTEGER,
+CIV VARCHAR2(40),
+PRENOMCLIENT VARCHAR2(40),
+NOMCLIENT VARCHAR2(40),
+DATENAISSANCE DATE,
+ADRESSE VARCHAR2(100),
+TELPROF VARCHAR2(40),
+TELPRIV VARCHAR2(40),
+FAX VARCHAR2(40),
+CONSTRAINT PK_CLIENT PRIMARY KEY (NUMCLIENT)
+);
+
+CREATE TABLE EMPLOYE
+(
+NUMEMPLOYE INTEGER,
+PRENOMEMP VARCHAR2(40),
+NOMEMP VARCHAR2(40),
+CATEGORIE VARCHAR2(40),
+SALAIRE REAL,
+CONSTRAINT PK_EMPLOYE PRIMARY KEY (NUMEMPLOYE),
+CONSTRAINT CH_EMPLOYE CHECK (CATEGORIE IN ('MECANICIEN' , 'ASSISTANT'))
+);
+
+CREATE TABLE MARQUE (
+NUMMARQUE INTEGER,
+MARQUE VARCHAR2(40),
+PAYS VARCHAR2(40),
+CONSTRAINT PK_MARQUE PRIMARY KEY (NUMMARQUE)
+);
+
+CREATE TABLE MODELE (
+NUMMODELE INTEGER,
+NUMMARQUE INTEGER,
+MODELE VARCHAR2(40),
+CONSTRAINT PK_MODELE PRIMARY KEY (NUMMODELE),
+CONSTRAINT FK_MODELE_MARQUE FOREIGN KEY (NUMMARQUE) REFERENCES MARQUE(NUMMARQUE)
+);
+
+CREATE TABLE VEHICULE (
+NUMVEHICULE INTEGER,
+NUMCLIENT INTEGER,
+NUMMODELE INTEGER,
+NUMIMMAT INTEGER,
+ANNEE VARCHAR2(4),
+CONSTRAINT PK_VEHICULE PRIMARY KEY (NUMVEHICULE),
+CONSTRAINT FK_VEHICULE_CLIENT FOREIGN KEY (NUMCLIENT) REFERENCES CLIENT(NUMCLIENT),
+CONSTRAINT FK_VEHICULE_MODELE FOREIGN KEY (NUMMODELE) REFERENCES MODELE(NUMMODELE)
+);
+
+CREATE TABLE INTERVENTIONS (
+NUMINTERVENTION INTEGER,
+NUMVEHICULE INTEGER,
+TYPEINTERVENTION VARCHAR2(40),
+DATEDEBINTERV DATE,
+DATEFININTERV DATE,
+COUTINTERV REAL,
+CONSTRAINT PK_INTERVENTIONS PRIMARY KEY (NUMINTERVENTION),
+CONSTRAINT FK_INTERVENTIONS_VEHICULE FOREIGN KEY (NUMVEHICULE) REFERENCES VEHICULE(NUMVEHICULE)
+);
+
+CREATE TABLE INTERVENANT
+(
+NUMINTERVENTION INTEGER,
+NUMEMPLOYE INTEGER,
+DATEDEBUT DATE,
+DATEFIN DATE,
+CONSTRAINT PK_INTERVENANT PRIMARY KEY (NUMINTERVENTION, NUMEMPLOYE),
+CONSTRAINT FK_INTERVENANT_EMPLOYE FOREIGN KEY (NUMEMPLOYE)REFERENCES EMPLOYE,
+CONSTRAINT FK_INTERVENANT_INTERVENTIONS FOREIGN KEY (NUMINTERVENTION) REFERENCES INTERVENTIONS
+);
+\end{sql}
+\subsubsection{Résultat}
+\begin{sql}
+Table created.
+Table created.
+Table created.
+Table created.
+Table created.
+Table created.
+Table created.
+\end{sql}
+\subsection{Ajouter l’attribut \texttt{DATEINSTALLATION} de type Date dans la relation \texttt{EMPLOYE}}
+\textrm{Il s'agit de modifier la structure de la table en lui ajoutant une colonne qui aura pour valeur par défaut : null} 
+\subsubsection{Requête}
+\begin{sql}
+ALTER TABLE EMPLOYE ADD DATEINSTALLATION DATE NULL;
+\end{sql}
+\subsubsection{Résultat}
+\begin{sql}
+Table altered.
+\end{sql}
+\subsection{Ajouter la contrainte not null pour les attributs \texttt{CATEGORIE}, \texttt{SALAIRE} de la relation \texttt{EMPLOYE}}
+\textrm{L'ajout de cette contrainte empêchera l'insertion d'enregistrement ayant "null" comme valeur de CATEGORIE et/ou SALAIRE dans la table EMPLOYE}
+\subsubsection{Requête}
+\begin{sql}
+AlTER TABLE EMPLOYE MODIFY CATEGORIE NOT NULL ;
+AlTER TABLE EMPLOYE MODIFY SALAIRE NOT NULL ;
+\end{sql}
+\subsubsection{Résultat}
+\begin{sql}
+Table altered.
+Table altered.
+\end{sql}
+\subsection{Modifier la longueur de l’attribut \texttt{PRENOMEMP} (agrandir, réduire)}
+\textrm{La modification de la longueur d'un attribut se fait en augmentant/réduisant le nombre de caractère associé au type VARCHAR/VARCHAR2 }
+\subsubsection{Requête}
+\begin{sql}
+ALTER TABLE EMPLOYE MODIFY PRENOMEMP VARCHAR2(20);
+ALTER TABLE EMPLOYE MODIFY PRENOMEMP VARCHAR2(50);
+\end{sql}
+\subsubsection{Résultat}
+\begin{sql}
+Table altered.
+Table altered.
+\end{sql}
+\subsection{Supprimer la colonne \texttt{DATEINSTALLATION} dans la table \texttt{EMPLOYE}. Vérifier la suppression}
+\subsubsection{Requête}
+\begin{sql}
+ALTER TABLE EMPLOYE DROP COLUMN DATEINSTALLATION;
+\end{sql}
+\subsubsection{Résultat}
+\begin{sql}
+Table altered.
+\end{sql}
+\textrm{La suppression de la colonne DATEINSTALLATION s'exécute sans souci car elle ne participe dans aucune contraint}
+\subsubsection{Vérification}
+\begin{sql}
+SELECT COLUMN_NAME FROM USER_TAB_COLUMNS WHERE TABLE_NAME = 'CLIENT';
+
+COLUMN_NAME                                                                     
+------------------------------                                                  
+NUMCLIENT                                                                       
+CIV                                                                             
+PRENOMCLIENT                                                                    
+NOMCLIENT                                                                       
+DATENAISSANCE                                                                   
+ADRESSE                                                                         
+TELPROF                                                                         
+TELPRIV                                                                         
+FAX                                                                             
+
+9 rows selected.
+\end{sql}
+\subsection{Renommer la colonne \texttt{ADRESSE} dans la table \texttt{CLIENT} par \texttt{ADRESSECLIENT}. Vérifier}
+\textrm{Il suffit de connaitre le nom de la colonne à modifier et de le remplacer.}
+\subsubsection{Requête}
+\begin{sql}
+ALTER TABLE CLIENT RENAME COLUMN ADRESSE TO ADRESSECLIENT;
+\end{sql}
+\subsubsection{Résultat}
+\begin{sql}
+Table altered.
+\end{sql}
+\subsubsection{Vérification}
+\begin{sql}
+SELECT COLUMN_NAME FROM USER_TAB_COLUMNS WHERE TABLE_NAME = 'CLIENT';
+
+COLUMN_NAME                                                                     
+------------------------------                                                  
+NUMCLIENT                                                                       
+CIV                                                                             
+PRENOMCLIENT                                                                    
+NOMCLIENT                                                                       
+DATENAISSANCE                                                                   
+ADRESSECLIENT                                                                   
+TELPROF                                                                         
+TELPRIV                                                                         
+FAX                                                                             
+
+9 rows selected.
+\end{sql}
+\subsection{Ajouter la contrainte suivante : Date de début d’intervention doit être inferieur à la date de fin d’intervention}
+\textrm{Cette contrainte empêchera l'insertion d'enregistrement incohérent au niveau des dates. }
+\subsubsection{Requête}
+\begin{sql}
+ALTER TABLE INTERVENTIONS ADD CONSTRAINT CHK_DATEINTERV CHECK (DATEDEBINTERV < DATEFININTERV);
+\end{sql}
+\textrm{C'est la contrainte CHECK qui nous a permis cette vérification.}
+\subsubsection{Résultat}
+\begin{sql}
+Table altered.
+\end{sql}
+\textrm{La contrainte a été ajouté sans souci car aucune insertion n'a encore été faite (aucun risque de violation de la contrainte à ce niveau).}
+
+\section{Langage de manipulation de données}
+\subsection{Remplir toutes les tables par les instances représentées ci-dessus, quels sont les problèmes rencontrés.}
+\subsubsection{Requête}
+\begin{sql}
+INSERT INTO TABLENAME (SCHEMA) VALUES (VALUES);
+\end{sql}
+
+\subsubsection{Exemple}
+\begin{sql}
+INSERT INTO CLIENT VALUES(1,'MME','cherifa','mahbouba',to_date('08/08/1957', 'DD/MM/YYYY'),'cite 1013 logts bt 61 alger','0561381813','0562458714','');
+\end{sql}
+
+\subsubsection{Résultat}
+\begin{enumerate}
+    \item Insertion sans problèmes
+    \begin{sql}
+    1 row created.
+    \end{sql}
+    
+    \item le client n 23 ne peut pas etre née le mois : 13 car non valide
+    \begin{sql}
+    INSERT INTO CLIENT VALUES(23,'M','lamine','merabat',to_date('09/13/1965', 'DD/MM/YYYY'),'cite jeanne d arc ecran b2-gambetta-oran','0561724538','0561724538','')
+    ERROR at line 1:
+    ORA-01843: not a valid month
+    \end{sql}
+    \item Seules les valeurs \texttt{'MECANECIEN'} et \texttt{'ASSISTANT'} sont autorisés pour la colonne \texttt{EMPLOYE.CATEGORIE}
+    \begin{sql}
+    INSERT INTO EMPLOYE VALUES(80,'lardjoune','karim','',25000)
+    ERROR at line 1:
+    ORA-01400: cannot insert NULL into ("DBAINTERVENTION"."EMPLOYE"."CATEGORIE") 
+    \end{sql}
+    \item Les véhicules 77 et 9 n'existent pas dans la table \texttt{'INTERVENTIONS'} d'où la violation de la contrainte :      \texttt{FK\_INTERVENTIONS\_VEHICULE}
+    \begin{sql}
+    INSERT INTO VEHICULE VALUES (19,18,77,3904318515,'1985')
+    ERROR at line 1:
+    ORA-02291: integrity constraint (DBAINTERVENTION.FK_VEHICULE_MODELE) violated - parent key not found 
+    
+    INSERT INTO VEHICULE VALUES (24,80,9,1789519816,'1998')
+    ERROR at line 1:
+    ORA-02291: integrity constraint (DBAINTERVENTION.FK_VEHICULE_CLIENT) violated - parent key not found 
+    \end{sql}
+    \item Les employés 88 et 77 n'existent pas dans la table \texttt{'INTERVENTIONS'} d'où la violation de la contrainte d'intégrité \texttt{FK\_INTERVENANT\_EMPLOYE}
+    \begin{sql}
+    INSERT INTO INTERVENTIONS VALUES (16,77,'reparation',to_date('2006-06-27 09:00:00','YYYY-MM-DD HH24:MI:SS'),to_date('2006-06-30 12:00:00','YYYY-MM-DD HH24:MI:SS'),25000))
+    ERROR at line 1:
+    ORA-02291: integrity constraint (DBAINTERVENTION.FK_INTERVENTIONS_VEHICULE) violated - parent key not found 
+    
+    INSERT INTO INTERVENANT VALUES (14,88,to_date('2006-05-07 14:00:00','YYYY-MM-DD HH24:MI:SS' ),to_date('2006-05-10 18:00:00','YYYY-MM-DD HH24:MI:SS' ))
+    ERROR at line 1:
+    ORA-02291: integrity constraint (DBAINTERVENTION.FK_INTERVENANT_EMPLOYE) violated - parent key not found 
+    \end{sql}
+    \end{enumerate}
+
+
+\subsection{Supposons que le salaire de l’employé BADI Hatem est augmenté par 5000DA Que faut-il faire ?}
+\textrm{Il faut mettre à jour la colonne SALAIRE de l'enregistrement dont le nom et prénom est BADI Hatem dans la table \texttt{'EMPLOYE'} }
+\subsubsection{Requête}
+\begin{sql}
+UPDATE EMPLOYE SET SALAIRE = SALAIRE + 5000 WHERE PRENOMEMP = 'badi' AND NOMEMP = 'hatem'    
+\end{sql}
+\subsubsection{Résultat}
+\begin{sql}
+1 rows updated.
+\end{sql}
+\subsection{Pour les interventions de mois de Février, ajouter 5 cinq jours à la date de début. Désactiver la contrainte pour autoriser la modification. Réactiver la contrainte.}
+\begin{enumerate}
+    \item Désactivation de la contraintes 
+    \\
+    Afin de pouvoir exécuté la requête nous devons désactiver la contrainte CHK\_DATEINTERV pour éviter d'engendrer un conflit. 
+  
+    \subsubsection{Requête}
+    \begin{sql}
+    ALTER TABLE INTERVENTIONS DISABLE CONSTRAINT CHK_DATEINTERV;
+    \end{sql}
+    \subsubsection{Résultat}
+    \begin{sql}
+    Table altered.
+    \end{sql}
+    \item Modification de la table
+    \\
+    Nous pouvons maintenant ajouter 5 jours aux enregistrements dont l'intervention est en Février, la fonction EXTRACT( MONTH FROM Une\_Date) nous a permis de récupérer uniquement le mois à partir de la variable Une\_Date de type DATE.
+    
+    \subsubsection{Requête}
+    \begin{sql}
+    UPDATE INTERVENTIONS SET DATEDEBINTERV =  DATEDEBINTERV + 5 WHERE EXTRACT(MONTH FROM DATEDEBINTERV) = 2 OR EXTRACT(MONTH FROM DATEFININTERV) = 2 ;
+    \end{sql}
+    \subsubsection{Résultat}
+    \textrm{La modification a réussie car la contrainte est désactivé et elle touche 4 enregistrements}
+    \begin{sql}
+    4 rows updated.
+    \end{sql}
+    
+    \item Réactivation de la contrainte
+    \\
+    Nous voulons réactiver la contrainte CHK\_DATEINTERV afin d'assurer la cohérence des insertions suivantes, mais nous créons d'abord la table d'erreurs en cas ou les modifications faites durant la période de désactivation de la contrainte posent problème.
+    \subsubsection{Requête}
+    \begin{sql}
+    CREATE TABLE TABLEERREURS (ADRESSE ROWID, UTILISATEUR VARCHAR2(30), NOMTABLE VARCHAR2(30), NOMCONTRAINTE VARCHAR2(30));
+    ALTER TABLE INTERVENTIONS ENABLE CONSTRAINT CHK_DATEINTERV EXCEPTIONS INTO TABLEERREURS
+    \end{sql}
+    \subsubsection{Résultat}
+    \textrm{Effectivement impossible de réactiver la contrainte! les erreurs sont reporté dans la table TABLEERREURS précédemment crée.}
+    \begin{sql}
+    ERROR at line 1:
+    ORA-02293: cannot validate (DBAINTERVENTION.CHK_DATEINTERV) - check constraint violated     
+\end{sql}
+Ainsi avec la requete ci-dessous nous affichons les enregistrements causant la violation de la contrainte CHK\_DATEINTERV empêchant sa réactivation.
+\begin{sql}
+SELECT DATEDEBINTERV, DATEFININTERV FROM INTERVENTIONS WHERE DATEDEBINTERV >= DATEFININTERV;
+DATEDEBINTERV      DATEFININTERV
+------------------ ------------------
+07-MAR-06          26-FEB-06
+05-MAR-06          24-FEB-06
+04-MAR-06          25-FEB-06
+04-MAR-06          22-FEB-06
+\end{sql}
+\end{enumerate}
+
+\subsection{Supprimer tous les véhicules de modèle Série 5. Quels sont les problèmes rencontrés.}
+\subsubsection{Requête}
+\begin{sql}
+DELETE VEHICULE WHERE NUMMODELE IN (SELECT NUMMODELE FROM MODELE WHERE MODELE = 'serie 5')
+\end{sql}
+\subsubsection{Résultat}
+\textrm{Supprimer un enregistrement de la table véhicule engendre la violation de la contrainte FK\_INTERVENTIONS\_VEHICULE car NUMVEHICULE est une clé étrangère dans la table INTERVENTIONS. }
+\begin{sql}
+ERROR at line 1:
+ORA-02292: integrity constraint (DBAINTERVENTION.FK_INTERVENTIONS_VEHICULE) violated -
+child record found 
+\end{sql}
+\textrm{La solution pour effectuer la requete de suppression est d'ajouter l'option cascade dans la contrainte FK\_INTERVENTIONS\_VEHICULE, mais cela est dangereux et déconseillé car elle peut causer la suppression de plusieurs enregistrement en cascade.}
+\section{Langage d'interrogation de données}
+\subsection{Lister les modèles et leur marque.}
+\subsubsection{Requête}
+\begin{sql}
+SELECT MARQUE , MODELE FROM MARQUE MA, MODELE MO WHERE MA.NUMMARQUE = MO.NUMMARQUE;\end{sql}
+\subsubsection{Résultat}
+\begin{sql}
+    MARQUE                                   MODELE                                 
+    ---------------------------------------- ---------------------------------------
+    lamborghini                              diablo                                 
+    audi                                     série 5                                
+    alfa-romeo                               nsx                                    
+    mercedes                                 classe c                               
+    renault                                  safrane                                
+    venturi                                  400 gt                                 
+    lotus                                    esprit                                 
+    peugeot                                  605                                    
+    toyota                                   prévia                                 
+    ferrari                                  550 maranello                          
+    rolls-royce                              bentley-continental                    
+    alfa-romeo                               spider                                 
+    maserati                                 evoluzione                             
+    porsche                                  carrera                                
+    porsche                                  boxter                                 
+    volvo                                    s 80                                   
+    chrysler                                 300 m                                  
+    bmw                                      m 3                                    
+    jaguar                                   xj 8                                   
+    peugeot                                  406 coupé                              
+    venturi                                  300 atlantic                           
+    mercedes                                 classe e                               
+    lexus                                    gs 300                                 
+    cadilac                                  séville                                
+    saab                                     95 cabriolet                           
+    audi                                     tt coupé                               
+    ferrari                                  f 355                                  
+    
+    27 rows selected.
+\end{sql}
+\subsection{Lister les véhicules sur lesquels, il y a au moins une intervention.}
+\subsubsection{Requête}
+\begin{sql}
+SELECT I.NUMINTERVENTION, V.* FROM VEHICULE V, INTERVENTIONS I WHERE I.NUMVEHICULE = V.NUMVEHICULE;
+\end{sql}
+\subsubsection{Résultat}
+\begin{sql}
+NUMINTERVENTION NUMVEHICULE  NUMCLIENT  NUMMODELE   NUMIMMAT ANNE
+--------------- ----------- ---------- ---------- ---------- ----
+             14           1          2          6   12519216 1992
+              7           1          2          6   12519216 1992
+             10           2          9         20  124219316 1993
+              1           3         17          8 1452318716 1987
+              5           6         20          6 3853319735 1997
+             13           8         16         14 8365318601 1986
+              4          10         20         22 9413119935 1999
+              6          14         22         21 7543119207 1992
+              8          17         12         11 4563117607 1976
+             15          20         22          2 1234319707 1997
+             12          20         22          2 1234319707 1997
+              2          21          3         19 8429318516 1985
+              9          22          8         19 1245619816 1998
+              3          25         13          5 1278919833 1998
+             11          28         10          3 1986219904 1999
+
+15 rows selected.
+\end{sql}
+\subsection{Quelle est la durée moyenne d’une intervention?}
+\subsubsection{Requête}
+\textrm{La fonction AVG() nous permet de calculer un moyenne. }
+\begin{sql}
+SELECT AVG(DATEFININTERV - DATEDEBINTERV) AS DUREE_MOYENNE FROM INTERVENTIONS;\end{sql}
+\subsubsection{Résultat}
+\begin{sql}
+    DUREE_MOYENNE                                                                   
+    -------------                                                                   
+       -.87222222                                                                       
+\end{sql}
+\subsection{Donner le montant global des interventions dont le coût d’intervention est supérieur à 30000 DA?}
+\subsubsection{Requête}
+\textrm{La fonction SUM() nous permet de calculer une somme. }
+\begin{sql}
+SELECT NUMVEHICULE, SUM(COUTINTERV) FROM INTERVENTIONS GROUP BY NUMVEHICULE HAVING SUM(COUTINTERV) > 30000;
+\end{sql}
+\subsubsection{Résultat}
+\begin{sql}
+    NUMVEHICULE SUM(COUTINTERV)                                                     
+    ----------- ---------------                                                     
+             25           42000                                                     
+              1           47000                                                     
+              6           40000                                                     
+             28           36000                                                     
+              2           45000                                                     
+             20           54000 
+\end{sql}
+
+
+\end{document}

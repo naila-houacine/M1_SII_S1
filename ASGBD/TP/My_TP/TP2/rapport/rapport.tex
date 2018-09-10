@@ -1,0 +1,445 @@
+%arara : pdflatex
+\documentclass[•]{article}
+
+\usepackage{../../TP0/style}
+
+\begin{document}
+\def\reportnumber{2}
+\def\reporttitle{Gestion des droits}
+\input{../../TP0/front_page}
+
+\subsection{Création de l'Admin}
+\textrm{Lors de la création de l'utilisateur Admin un mot de passe lui est aussi donné.}
+\textrm{Aussi un quota de la tablespace \texttt{INTERVENTION\_TBS} lui est affecté. }
+
+\subsubsection{Requête}
+\begin{sql}
+CREATE USER Admin IDENTIFIED BY Admin ;
+Alter user Admin quota unlimited on INTERVENTION_TBS;
+\end{sql}
+\subsubsection{Résultat}
+\begin{sql}
+User created.
+User altered.
+\end{sql}
+
+
+\subsection{Connexion à l'utilisateur Admin.}
+\subsubsection{Requête}
+\begin{sql}
+connect Admin/Admin;
+\end{sql}
+\textrm{l'utilisateur ne peut pas se connecter car il n'a pas le droit de créer un compte (session).}
+\subsubsection{Résultat}
+\begin{sql}
+ERROR:
+ORA-01045: user ADMIN lacks CREATE SESSION privilege; logon denied
+\end{sql}
+\subsection{Permission de création d’une session accordée à l'utilisateur Admin puis connexion de se dernier a son compte.}
+
+\textrm{Cette permission lui est accordé par le créateur de l'utilisateur Admin, et il s'agit d'un privilège de création donc on utilise la commande GRANT. }
+
+\subsubsection{Requête}
+\begin{sql}
+GRANT CREATE SESSION TO Admin;
+connect Admin/Admin;
+\end{sql}
+
+\textrm{Maintenant l'utilisateur Admin peut créer sa session et donc se connecter à l'aide de son nom: Admin et mot de passe : Admin.}
+
+\subsubsection{Résultat}
+\begin{sql}
+Grant succeeded.
+Connected.
+\end{sql}
+
+\subsection{Donner les privilèges de création de tables et d'utilisateurs à l'Admin.}
+\textrm{C'est l'utilisateur qui a créer l'Admin qui va lui affecter les privilèges.}
+
+\subsubsection{Requête}
+\begin{sql}
+connect DBAINTERVENTION/DBAINTERVENTION;
+GRANT CREATE TABLE TO Admin;
+GRANT CREATE USER TO Admin;
+\end{sql}
+\subsubsection{Résultat}
+\begin{sql}
+Connected.
+Grant succeeded.
+Grant succeeded.
+\end{sql}
+
+\textrm{Vérification des privilèges accordés à l'Admin}
+\subsubsection{Requête}
+\begin{sql}
+connect Admin/Admin;
+	
+CREATE TABLE My_TABLE(
+my_num INTEGER PRIMARY KEY,
+my_name VARCHAR2(30)
+);
+	
+CREATE USER USER0 IDENTIFIED BY USER0;
+\end{sql}
+\subsubsection{Résultat}
+\begin{sql}
+Connected.
+
+Table created.
+
+User created.
+\end{sql}
+
+
+\subsection{Exécution de la requête : Select * from \texttt{DBAINTERVENTION.EMPLOYE}.}
+\texttt{Tentative de l'Admin d'accéder en lecture à la table EMPLOYE de l'utilisateur DBAINTERVENTION. }
+\subsubsection{Requête}
+\begin{sql}
+Select * from DBAINTERVENTION.EMPLOYE ;
+\end{sql}
+\subsubsection{Résultat}
+\begin{sql}
+ERROR at line 1:
+ORA-00942: table or view does not exist
+\end{sql}
+
+\textrm{l'utilisateur Admin n'a pas pu effectuer la lecture sur la table EMPLOYE,
+car il n'a que les droits de création de table et pas de lecture
+d'ailleurs oracle n'avoue même pas l'existence de la table EMPLOYE}
+
+\subsection{Donner les droits de lecture à l'Admin pour la table EMPLOYE. }
+\textrm{L'utilisateur affectera le droit de lecture sur sa table DBAINTERVENTION à l'Admin. }
+\subsubsection{Requête}
+\begin{sql}
+connect DBAINTERVENTION/DBAINTERVENTION;
+GRANT SELECT ON EMPLOYE TO Admin;
+\end{sql}
+\subsubsection{Résultat}
+\begin{sql}
+Connected.
+Grant succeeded.
+\end{sql}
+\textrm{Exécution de la requête \texttt{SELECT * FROM DBAINTERVENTION.EMPLOYE}}
+\subsubsection{Requête}
+\begin{sql}
+connect Admin/Admin;
+SELECT * FROM DBAINTERVENTION.EMPLOYE ;
+\end{sql}
+\subsubsection{Résultat}
+\begin{sql}
+Connected.
+
+NUMEMPLOYE  PRENOMEMP        NOMEMP    CATEGORIE    SALAIRE
+-----------------------------------------------------------
+        53    lachemi        bouzid   MECANICIEN      25000
+
+        54  bouchemla         elias    ASSISTANT      10000
+
+        55       hadj        zouhir    ASSISTANT      12000
+
+        56   oussedik         hakim   MECANICIEN      20000
+
+        57       abad    abdelhamid    ASSISTANT      13000
+
+        58     babaci         tayeb   MECANICIEN      21300
+
+        59  belhamidi        mourad   MECANICIEN      19500
+
+        60   igoudjil      redouane    ASSISTANT      15000
+
+        61      koula         bahim   MECANICIEN      23100
+
+        62     rahali        ahcene   MECANICIEN      24000
+
+        63     chaoui        ismail    ASSISTANT      13000
+
+        64       badi         hatem    ASSISTANT      14000
+
+        65  mohammedi      mustapha   MECANICIEN      24000
+
+        66      fekar     abdelaziz    ASSISTANT      13500
+
+        67   saidouni         wahid   MECANICIEN      25000
+
+        68   boularas         farid    ASSISTANT      14000
+
+        69     chaker        nassim   MECANICIEN      26000
+
+        71      terki        yacine   MECANICIEN      23000
+
+        72    tebibel         ahmed    ASSISTANT      17000
+
+        80  lardjoune         karim                   25000
+
+
+20 rows selected.
+\end{sql}
+
+
+
+\subsection{Le centre de gestion des interventions augmente les salaires des employés dont le nombre total des interventions est supérieur à 5.}
+\textrm{il faut d'abord comptabiliser le nombre de d'interventions de chaque employé appartenant à la table INTERVENANT puis comparer la valeur avec 5 dans le cas ou le nombre d'intervention est supérieure à 5 alors: on passe a la recherche de l'employé en question dans la table EMPLOYE puis l'on ajouter la somme à son salaire.}
+\subsubsection{Requête}
+\begin{sql}
+UPDATE DBAINTERVENTION.EMPLOYE E 
+SET E.SALAIRE = E.SALAIRE + 1000 
+WHERE E.NUMEMPLOYE IN 
+	(SELECT I.NUMEMPLOYE 
+	FROM DBAINTERVENTION.INTERVENANT I 
+	WHERE (SELECT COUNT(NUMINTERVENTION) 
+		   FROM DBAINTERVENTION.INTERVENANT II
+		   WHERE I.NUMEMPLOYE = II.NUMEMPLOYE
+		   GROUP BY NUMEMPLOYE 
+		   )>5
+	);
+\end{sql}
+\subsubsection{Résultat}
+\begin{sql}
+ERROR at line 1:
+ORA-00942: table or view does not exist
+\end{sql}
+
+\textrm{l'utilisateur Admin n'a ni les droits de modification (mise a jours) sur la table EMPLOYE
+ ni les droits de lecture sur la table INTERVENANT 
+ d'ailleurs oracle n'avoue même pas l'existence des tables}
+\\
+
+\subsection{Donner les droits de mise à jour à  l'utilisateur Admin pour la table EMPLOYE, les droits de lecture sur la table INTERVENANT, Puis exécution de la commande précédente par l'Admin .}
+\textrm{L'utilisateur DBAINTERVENTION accord à l'utilisateur Admin les droits UPDATE sur la table EMPLOYE et SELECT sur la table INTERVENANT. }
+\subsubsection{Requête}
+\begin{sql}
+connect DBAINTERVENTION/DBAINTERVENTION;
+GRANT UPDATE ON EMPLOYE TO Admin;
+GRANT SELECT ON INTERVENANT TO Admin;
+\end{sql}
+
+\subsubsection{Résultat}
+\begin{sql}
+Connected.
+Grant succeeded.
+Grant succeeded.
+\end{sql}
+\textrm{Exécution de la requête par l'Admin après avoir reçu les droits nécessaires.}
+
+\subsubsection{Requête}
+\begin{sql}
+connect Admin/Admin;
+	
+UPDATE DBAINTERVENTION.EMPLOYE E 
+SET E.SALAIRE = E.SALAIRE + 1000 
+WHERE E.NUMEMPLOYE IN 
+	(SELECT I.NUMEMPLOYE 
+	FROM DBAINTERVENTION.INTERVENANT I 
+	WHERE (SELECT COUNT(NUMINTERVENTION) 
+		   FROM DBAINTERVENTION.INTERVENANT II
+		   WHERE I.NUMEMPLOYE = II.NUMEMPLOYE
+		   GROUP BY NUMEMPLOYE 
+		   )>5
+	);
+\end{sql}
+
+\subsubsection{Résultat}
+\begin{sql}
+Connected.
+0 rows updated.
+\end{sql}
+
+\textrm{Il n'y a aucun enregistrement qui correspond aux conditions de la requête.}
+\\
+
+\subsection{Création d'un index \texttt{NOMEMP\_IX} sur l’attribut NOMEMP de la table EMPLOYE.}
+\subsubsection{Requête}
+\begin{sql}
+CREATE INDEX NOMEMP_IX ON DBAINTERVENTION.EMPLOYE(NOMEMP);
+\end{sql}
+
+\subsubsection{Résultat}
+\begin{sql}
+ERROR at line 1:
+ORA-01031: insufficient privileges
+\end{sql}
+
+\textrm{on remarque que l'utilisateur Admin n'a pas le droit de création d'un index sur la table EMPLOYE, pour cela le privilège de création d'index sur la table en question doit lui être attribué;
+Aussi vu que l'Admin possède déja des droits sur la table EMPLOYE, oracle reconnait que cette table existe mais que l'utilisateur n'a pas le droit a la création d'un index la dessus.}
+\\
+
+\subsection{Donner les droits de création d’index à l'Admin pour la table EMPLOYE, puis réessayer la création de l’index.}
+\textrm{L'utilisateur DBAINTERVENTION accorde le droit de création d'un index sur la table EMPLOYE. }
+\subsubsection{Requête}
+\begin{sql}
+connect DBAINTERVENTION/DBAINTERVENTION;
+GRANT INDEX ON EMPLOYE TO Admin;
+\end{sql}
+\subsubsection{Résultat}
+\begin{sql}
+Connected.
+Grant succeeded.
+\end{sql}
+
+\textrm{Admin tente à nouveau la création de l'index. }
+\subsubsection{Requête}
+\begin{sql}
+connect Admin/Admin;
+CREATE INDEX NOMEMP_IX ON DBAINTERVENTION.EMPLOYE(NOMEMP);
+\end{sql}
+\subsubsection{Résultat}
+\begin{sql}
+Connected.
+Index created.
+\end{sql}
+
+\textrm{Une fois le privilège de création d'index sur la table EMPLOYE accordé à l'Admin, la création de déroule normalement. }
+
+\subsection{Enlever les privilèges précédemment accordés à l'utilisateur Admin.}
+\textrm{L'utilisateur DBAINTERVENTION doit connaitre les privilèges accordés et sur quelles tables afin de pouvoir les retirer.}
+\subsubsection{Requête}
+\begin{sql}
+CONNECT DBAINTERVENTION/DBAINTERVENTION;
+REVOKE SELECT ON EMPLOYE FROM Admin;
+REVOKE UPDATE ON EMPLOYE FROM Admin;
+REVOKE SELECT ON INTERVENANT FROM Admin;
+REVOKE INDEX ON EMPLOYE FROM Admin;
+\end{sql}
+\subsubsection{Résultat}
+\begin{sql}
+Connected.	
+
+Revoke succeeded.
+Revoke succeeded.
+Revoke succeeded.
+Revoke succeeded.
+\end{sql}
+   
+
+\subsection{Vérifier que les privilèges ont bien été supprimés.}
+\textrm{La vérification que les privilèges précédemment supprimés le sont bien, nous prendrons un exemple de test pour chaque privilège supprimé.}
+\subsubsection{Requête}
+\begin{sql}
+CONNECT Admin/Admin
+SELECT * FROM EMPLOYE
+UPDATE EMPLOYE SET SALAIRE=0 WHERE SALAIRE > 1000;
+SELECT * FROM INTERVENANT
+CREATE INDEX NOMEMP_IX ON DBAINTERVENTION.EMPLOYE(NOMEMP);
+\end{sql}
+\subsubsection{Résultat}
+\begin{sql}
+ERROR at line 1:
+ORA-00942: table or view does not exist
+ERROR at line 1:
+ORA-00942: table or view does not exist
+ERROR at line 1:
+ORA-00942: table or view does not exist
+ERROR at line 1:
+ORA-00942: table or view does not exist
+\end{sql}
+
+
+\textrm{Ainsi nous pouvons constater que tous les privilèges ont été retiré à l'Admin.}
+
+
+\subsection{Création du profil « Interv\_Profil » qui suit des caractéristiques données en TP.}
+
+\textrm{la création d'un profile permet la restriction des ressources à un utilisateur.}
+\subsubsection{Requête}
+\begin{sql}
+CREATE PROFILE Interv_Profil
+LIMIT SESSIONS_PER_USER 3 
+CPU_PER_SESSION DEFAULT 
+CPU_PER_CALL 35 CONNECT_TIME 
+90 IDLE_TIME 30 
+LOGICAL_READS_PER_SESSION DEFAULT 
+LOGICAL_READS_PER_CALL 1200 
+COMPOSITE_LIMIT DEFAULT
+PRIVATE_SGA 25K
+FAILED_LOGIN_ATTEMPTS 5
+PASSWORD_LIFE_TIME 50
+PASSWORD_REUSE_TIME 40
+PASSWORD_REUSE_MAX UNLIMITED
+PASSWORD_LOCK_TIME 1 
+PASSWORD_GRACE_TIME 5 ;
+\end{sql}
+
+\subsubsection{Résultat}
+\begin{sql}
+Profile created.
+\end{sql}
+
+
+\subsection{Affectation de ce profil à l’utilisateur Admin.}
+\subsubsection{Requête}
+\begin{sql}
+ALTER USER Admin PROFILE Interv_Profil;
+\end{sql}
+
+\subsubsection{Résultat}
+\begin{sql}
+User altered.
+\end{sql}
+
+\subsection{Création de rôle : « GESTIONNAIRE\_DES\_INTERVENTIONS » qui peut voir les tables EMPLOYE, VEHICULE, CLIENT et peut modifier les tables INTERVENTIONS et INTERVENANTS.}
+
+\textrm{A la création d'un rôle on lui accorde un ensemble de privilèges, puis se rôle peut être affecté a plusieurs utilisateurs. }
+\subsubsection{Requête}
+
+\begin{sql}
+CREATE ROLE GESTIONNAIRE_DES_INTERVENTIONS IDENTIFIED;
+GRANT SELECT ON EMPLOYE TO GESTIONNAIRE_DES_INTERVENTIONS;
+GRANT SELECT ON VEHICULE TO GESTIONNAIRE_DES_INTERVENTIONS;
+GRANT SELECT ON CLIENT TO GESTIONNAIRE_DES_INTERVENTIONS;
+GRANT UPDATE ON INTERVENTIONS TO GESTIONNAIRE_DES_INTERVENTIONS;
+GRANT UPDATE ON INTERVENANT TO GESTIONNAIRE_DES_INTERVENTIONS;
+\end{sql}
+
+\subsubsection{Résultat}
+\begin{sql}
+Role created.
+Grant succeeded.
+Grant succeeded.
+Grant succeeded.
+Grant succeeded.
+Grant succeeded.
+\end{sql}
+
+
+
+\subsection{Assignation de ce rôle à Admin. Avec vérification que les autorisations assignées au rôle GESTIONNAIRE\_DES\_INTERVENTIONS, ont été bien transférées à Admin.}
+
+\textrm{Assigner le rôle à l'Admin avec la commande GRANT.}
+\subsubsection{Requête}
+\begin{sql}
+GRANT GESTIONNAIRE_DES_INTERVENTIONS TO Admin;
+\end{sql}
+\subsubsection{Résultat}
+\begin{sql}
+Grant succeeded.
+\end{sql}
+
+\textrm{Vérifier que le rôle est transmis à l'Admin via une série de test suivant les privilèges accordés au rôle.}
+\subsubsection{Requête}
+\begin{sql}
+SELECT COUNT(NUMEMPLOYE) FROM DBAINTERVENTION.EMPLOYE;
+SELECT COUNT(NUMVEHICULE) FROM DBAINTERVENTION.VEHICULE;
+SELECT COUNT(NUMCLIENT) FROM DBAINTERVENTION.CLIENT;
+UPDATE DBAINTERVENTION.INTERVENTIONS SET COUTINTERV=COUTINTERV+100;
+UPDATE DBAINTERVENTION.INTERVENANT SET DATEDEBUT=DATEDEBUT+2;
+	
+\end{sql}
+\subsubsection{Résultat}
+\begin{sql}
+COUNT(NUMEMPLOYE)
+-----------------
+			   20
+COUNT(NUMVEHICULE)
+-----------------
+				26
+COUNT(NUMCLIENT)
+----------------
+			  22
+15 rows updated.
+26 rows updated.
+			  
+\end{sql}
+
+\textrm{Les résultats des requêtes confirment que les privilèges transmis à l'Admin via le rôle 'GESTIONNAIRE\_ DES\_INTERVENTIONS' fonctionnent correctement.}
+
+\end{document}
