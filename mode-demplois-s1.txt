@@ -1,0 +1,133 @@
+Les modules sont pas très compliqués, voici quelques conseils pour bien gérer ;) 
+
+/****************************************************************************************************************************************/
+
+ASGBD : Mr BOUKHALFA
+en cours : les isils vous pouvez ne pas trop assister mais y'a 2 chapitres nouveaux 
+           il faut vraiment pas les rater (Reprise après panne) et (optimisation)
+           les acads il vaut mieux assister à tous les cours.
+en TP : 
+  si c'est lui le chargé de TP: assistez absolument a toussss les tps vraiment !!! et envoyez les rapports dans les temps
+  (demandez même la série à l'avance pour gagner du temps ;) ) puis les dérnières séances il fera des TDs c'est hyper important de suivre!
+  
+  si c'est pas lui le chargé de TP: essayez au max d'assister avec le groupe qui a boukhalfa en TP, 
+  puis au pire récupérez tous leurs TDs surtout !
+  
+ au Test et Exam : le sujet est super long mais très faisable faut absolument tout réviser et beaucoup vous entrainer,
+  (y'a meme des questions de cours :p )
+  
+ PS: soyez respectueux et droit avec lui et 
+     ajoutez le sur votre Groupe FB il vous fera une révision générale (question/reponse) la veille de l'exam *___*
+ 
+ /****************************************************************************************************************************************/
+ 
+ Resolution de Problème: Mr AZZOUNE
+ en cours : c'est pas obligé d'assister à tous les cours mais si vous suivez avec lui vous allez retenir pas mal de bonne infos
+    par contre ne rentrez pas a son cours pour ne pas suivre il n'aime vraiment pas ca !
+    
+ en TD : c'est justement la ou vous allez tout comprendre comme par magie *___*
+        apporter a chaque TD un carnet de résumé et notez toutes les lois qu'il va vous donner
+        suivez bien le TD et posez des questions
+        
+en Test et Exam: 
+    en Test: question de cours uniquement (définition , loi , algorithme de A* , ...)
+    en Exam: Exercice de TD a 90% (si vous comprenez pas le fonctionnement d'un des exos demandez lui il répond clairement :D )
+    
+PS : il est super gentil, alors soyez gentils avec lui ;) 
+
+/****************************************************************************************************************************************/
+
+Meps : Mr DAOUDI
+en cours : meme si vous avez l'impression de ne rien comprendre suivez et essayez de retenir et de comprendre les lois
+          y'a presque tout dans ses diapos.
+          
+en TD : vous allez pas trop comprendre les 2 ou 3 premiers TDs mais ca va vite s'arranger avec la série "CMTD" 
+        mais faudra beaucoup s'exercer tout seul à la maison 
+        en suite la série suivante "CMTC et file d'attente" il faut apprendre à extraire vous même les lois selon les cas,
+        car il y'en a des compliquées à apprendre 
+        
+en Test et Exam:
+    en Test: le test faites le le plus tôt possible (sur les CMTD) ;) puis si vous comprennez pas l'ennoncé demandez lui !
+    en Exam: il donne toujours de quoi avoir un 10/20 soit un exo simple de CMTD soit un exo simple de file d'attente MM1 
+    puis le reste c'est un peu plus réfléchis.
+    
+PS: n'ayez pas peur quand il vous crit dessus xD 
+    il renvoit ceux qui n'ecrivent pas en TD 
+    mais hayel au fond ^^
+    
+    
+/****************************************************************************************************************************************/
+
+
+Compil : Mme Aliouane
+en cours : elle explique tout mais c'est pas obligatoire d'assister a 100%  x) 
+           elle donne les cours en polycope ca c'est top
+           
+en TD : elle explique super bien et en faite c'est la que vous allez bien assimiler ce que vous avez suivi/lu en cours/polycope
+        passez au tableau pour mieux comprendre 
+        
+en TP : vous aurez certainement un projet puis c'est tout
+        profitez en pour avoir un 18 ;) 
+        
+en Test et Exam:
+      niveau moyen, temps accordé juste juste 
+      uniquement exo de TD révisez bien et vous allez cartonner (vous pouvez vraiment augmenter votre moyenne la )
+      par contre faite la difference entre les representations ligne/ligne et colonne/colonne :D
+      
+PS : RAS x)
+     ah siiii elle met pas d'assiduité :p 
+
+
+/****************************************************************************************************************************************/
+
+
+Compléxité: Mme DRIAS
+en cours : filtrez juste l'essentiel ;) 
+           assistez et montrez votre présence (en positif bien sûr) à la fin vous comprendrez pourquoi :3
+           restez polis surtout, plus la section est aimée mieux ça se passera pour vous !
+           
+en TD et TP : cela dépend du chargé de TD/TP mais en générale c'est simple boff
+
+en Test et Exam : meme si vous comprennez rien au sujet essayez ! surtout ne rendez pas la feuille blache
+                  ecrivez du psedo code / un raisonnement / n'imprte exprimez votre solution puis c'est tout
+                  les questions ne sont pas lié alors répondez au max de question
+
+PS: Tous absolument tous ses sujets sont tirés de son livre ;)
+    soyez patients et gentils 
+    
+    
+/****************************************************************************************************************************************/
+
+
+Système: Mme KADRI
+en cours : suivez touuuttt, elle explique super bien (mais donne trop d'exemple parfois xD )
+           à assister absolument parceque en TD vous ne pourrez pas revenir sur tous les cas.
+           
+en TD : ne ratez aucun TD (assiduité) et montez au tableau au max croyez moi même si vous etes out montez au tableau!
+
+en TP : 
+  si c'est Mme Mehdi: profitez en vraiment !
+                      assistez, préparez, appelez la pour qu'elle vous réexplique, posez des questions, ..
+                      elle répondra à tout et très clairement
+                      normalement vous aurez un mini projet durant les vacances d'hiver
+                      
+PS : Mme Kadri BZZZZFF HAYLAAAA <3 
+
+/****************************************************************************************************************************************/
+
+enfin bon courage !!! c'est à votre porté alors just do it :D 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
